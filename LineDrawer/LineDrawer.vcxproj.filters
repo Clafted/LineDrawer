@@ -26,5 +26,8 @@
     <ClInclude Include="DataManager.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Data.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
