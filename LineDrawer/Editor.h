@@ -6,8 +6,8 @@
 
 class Editor
 {
-	std::list<Line> lines;
 	std::stack<Action*> fStack, bStack;
+	std::list<Line>* lines;
 	
 public:
 	
@@ -26,8 +26,7 @@ public:
 		}
 	}
 
-	inline const std::list<Line>& getLines() { return lines; }
-	inline void uploadLines(std::list<Line> lines) { this->lines = lines; }
+	void uploadLines(std::list<Line>& lines) { this->lines = &lines; }
 	void useAction(Action* action);
 	void undo();
 	void redo();

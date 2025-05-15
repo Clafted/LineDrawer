@@ -54,10 +54,9 @@ void DataManager::loadData(const char* file, std::list<Line>& dest)
 }
 
 
-std::list<Line> DataManager::loadFile(const char* file)
+void DataManager::loadFile(const char* file)
 {
 	std::ifstream iS(file);
-	std::list<Line> lines;
 	this->file = file;
 
 	if (iS.is_open())
@@ -70,10 +69,9 @@ std::list<Line> DataManager::loadFile(const char* file)
 		std::cout << "No file " << file << " exists. Operating on new data" << std::endl;
 	}
 
-	return lines;
 }
 
-bool DataManager::saveData(std::list<Line> lines)
+bool DataManager::saveData()
 {
 	std::string data;
 	std::ofstream oS;

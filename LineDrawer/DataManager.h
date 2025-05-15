@@ -22,8 +22,9 @@ class DataManager
 
 public:
 
-	std::list<Line> loadFile(const char* file);
+	std::list<Line> lines;
+	void loadFile(const char* file);
 
-	bool saveData(std::list<Line> lines);
+	bool saveData();
 };
 

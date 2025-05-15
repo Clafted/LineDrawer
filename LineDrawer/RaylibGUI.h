@@ -25,13 +25,14 @@ struct RaylibGUI
 	bool checkInputs()
 	{
 		bool isHovered = false;
+
+		// Check button inputs
 		for (Button* b : buttons)
 		{
 			if (b == nullptr) continue;
-			b->isHovered = false;
-			if (!CheckCollisionPointRec(GetMousePosition(), b->bounds)) continue;
-			isHovered = b->isHovered = true;
-			if (b->isClicked(GetMousePosition())) b->clickedAction();
+			b->isHovered = CheckCollisionPointRec(GetMousePosition(), b->bounds);
+			isHovered = (isHovered || b->isHovered);
+			if (isHovered && b->isClicked(GetMousePosition())) b->clickedAction();
 		}
 
 		return isHovered;

@@ -2,7 +2,6 @@
 #include <raylib.h>
 #include "DataManager.h"
 #include "Editor.h"
-#include "DrawAction.h"
 #include "RaylibGUI.h"
 
 DataManager dataManager;
@@ -10,16 +9,21 @@ Editor editor;
 RaylibGUI gui;
 Vector2 startLine = { -1.0f, -1.0f }, mousePos;
 Color background{ 200, 200, 200, 255 };
+ACTION_TYPE actionType = DRAW;
+Action* action;
 
-bool touchingLine(const Line& line, Vec2 pos)
+
+
+Action* createAction(ACTION_TYPE type)
 {
-	Vec2 startP(pos.x - line.start.x, pos.y - line.start.y );
-	Vec2 endP(pos.x - line.end.x, pos.y - line.end.y);
-	Vec2 lineV(line.start.x - line.end.x, line.start.y - line.end.y);
-
-	return startP.getLength() + endP.getLength() - lineV.getLength() < 2.0f;
+	switch (type) {
+	case DRAW: return new DrawAction();
+	case ERASE: return new EraseAction();
+	case MOVE: return new MoveAction();
+	}
 }
 
+// Handles editor input (kbm input)
 void handleInput()
 {
 	if (IsKeyDown(KEY_LEFT_CONTROL))
@@ -28,35 +32,38 @@ void handleInput()
 		{
 		case KEY_Z:	editor.undo(); break;
 		case KEY_Y: editor.redo(); break;
-		case KEY_S:	dataManager.saveData(editor.getLines()); break;
+		case KEY_S:	dataManager.saveData(); break;
 		}
 	}
-
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) startLine = GetMousePosition(); // Start line
-	else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))							 // End line
+	else
 	{
-		DrawAction* draw = new DrawAction();
-		draw->drawnLine = Line{ startLine, GetMousePosition() };
-		editor.useAction(draw);
-		startLine = { -1.0f, -1.0f };
-	}
-
-	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
-	{
-		for (Line l : editor.getLines())
+		switch (GetKeyPressed())
 		{
-			if (!touchingLine(l, GetMousePosition())) continue;
-			EraseAction* erase = new EraseAction();
-			erase->erasedLine = l;
-			editor.useAction(erase);
-			break;
+		case KEY_M: actionType = MOVE; break;
+		case KEY_E: actionType = ERASE; break;
+		case KEY_D: actionType = DRAW; break;
 		}
+	}
+
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+	{
+		action = createAction(actionType);
+		action->press(GetMousePosition(), dataManager.lines);
+	}
+	if (action == nullptr) return;
+	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) action->down(GetMousePosition(), dataManager.lines);
+	else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+	{
+		action->release(GetMousePosition(), dataManager.lines);
+		editor.useAction(action);
+		action = nullptr;
 	}
 }
 
 int main(int argc, char* argv[])
 {
-	editor.uploadLines(dataManager.loadFile(argv[1]));
+	dataManager.loadFile(argv[1]);
+	editor.uploadLines(dataManager.lines);
 
 	struct undoButton : Button 
 	{ void clickedAction() override { editor.undo(); } } undo;
@@ -82,12 +89,12 @@ int main(int argc, char* argv[])
 			ClearBackground(background);
 
 			// Lines
-			for (Line l : editor.getLines())
-				DrawLineV(l.start, l.end, touchingLine(l, mousePos)? BLUE : BLACK);
+			for (Line l : dataManager.lines)
+				DrawLineV(l.start, l.end, l.touchingLine(mousePos)? BLUE : BLACK);
 
 			// Currently-drawing line
-			if (startLine.x != -1.0f && startLine.y != -1.0f)
-				DrawLineV(startLine, mousePos, RED);
+			if (actionType == DRAW && action != nullptr)
+				DrawLineV(((DrawAction*)action)->drawnLine.start, ((DrawAction*)action)->drawnLine.end, RED);
 
 			gui.drawGUI();
 		EndDrawing();

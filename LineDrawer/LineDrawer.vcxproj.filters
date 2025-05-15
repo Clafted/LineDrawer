@@ -41,9 +41,6 @@
     <ClInclude Include="Action.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DrawAction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RaylibGUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>

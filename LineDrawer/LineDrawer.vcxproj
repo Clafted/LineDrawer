@@ -139,7 +139,6 @@
     <ClInclude Include="Action.h" />
     <ClInclude Include="Data.h" />
     <ClInclude Include="DataManager.h" />
-    <ClInclude Include="DrawAction.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="RaylibGUI.h" />
   </ItemGroup>
