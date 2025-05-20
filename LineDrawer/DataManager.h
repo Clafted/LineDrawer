@@ -9,13 +9,14 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 #include "Data.h"
-#include "Action.h"
 
 class DataManager
 {
 	std::string file;
+	std::string exportPath = "./exports";
 	
 	void parseIntsToLines(int ints[], int size, std::list<Line>& dest);
 	void loadData(const char* file, std::list<Line>& dest);
@@ -23,8 +24,10 @@ class DataManager
 public:
 
 	std::list<Line> lines;
-	void loadFile(const char* file);
 
+	void setupSoftware();
+	void loadFile(const char* file);
+	void listLineFiles();
 	bool saveData();
 };
 

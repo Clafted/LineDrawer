@@ -1,16 +1,23 @@
 #pragma once
 
 #include <list>
-#include "Data.h"
 #include "Action.h"
+#include "Canvas.h"
+#include "DataManager.h"
+#include "RaylibGUI.h"
 
-class Editor
+// Top-level class used to control GUI, Canvas, and Keyboard controls
+struct Editor
 {
 	std::stack<Action*> fStack, bStack;
-	std::list<Line>* lines;
-	
-public:
-	
+	std::list<Line>* lines = nullptr;
+
+	RaylibGUI gui;
+	Canvas canvas;
+	DataManager& dataManager;
+
+	Editor(DataManager& dataManager) : dataManager(dataManager) {}
+
 	~Editor()
 	{
 		while (!fStack.empty())
@@ -26,9 +33,12 @@ public:
 		}
 	}
 
+	void loadEditor();
 	void uploadLines(std::list<Line>& lines) { this->lines = &lines; }
+	void handleInput();
 	void useAction(Action* action);
 	void undo();
 	void redo();
+	void drawEditor();
 };
 

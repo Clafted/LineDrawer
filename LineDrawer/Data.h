@@ -12,7 +12,7 @@ struct Vec2
 
 	inline float getLength()
 	{
-		return sqrt(x * x + y * y);
+		return (float)sqrt(x * x + y * y);
 	}
 
 	inline bool operator==(const Vec2& rhs) const
@@ -23,6 +23,18 @@ struct Vec2
 	
 	inline Vec2 operator-(const Vec2& rhs)
 	{ return Vec2(x - rhs.x, y - rhs.y); }
+
+	inline Vec2 operator*(float a)
+	{ return Vec2(x * a, y * a); }
+
+	void operator*=(float a)
+	{ *this = *this * a; }
+
+	void operator+=(const Vec2& rhs)
+	{ *this = *this + rhs; }
+
+	void operator-=(const Vec2& rhs)
+	{ *this = *this - rhs; }
 
 	inline operator Vector2()
 	{ return Vector2{ x, y }; }

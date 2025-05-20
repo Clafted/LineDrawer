@@ -2,10 +2,25 @@
 
 #include <raylib.h>
 
+enum GUI_INPUT
+{
+	NONE, UNDO, REDO, SAVE
+};
+
 struct Button
 {
 	Rectangle bounds;
+	GUI_INPUT val = NONE;
+	Texture2D texture;
 	bool isHovered = false;
+
+	Button(const char* texturePath, Rectangle bounds, GUI_INPUT val)
+		: bounds(bounds), val(val)
+	{
+		texture = LoadTexture(texturePath);
+		texture.width = bounds.width;
+		texture.height = bounds.height;
+	}
 
 	inline bool isClicked(Vector2 mousePos)
 	{ 
@@ -13,37 +28,38 @@ struct Button
 				&& IsMouseButtonPressed(MOUSE_BUTTON_LEFT); 
 	}
 
-	virtual void clickedAction() {};
+	GUI_INPUT clickedAction() { return val; };
 };
 
 #define MAX_BUTTONS 10
 
 struct RaylibGUI
 {
-	Button* buttons[MAX_BUTTONS];
+	std::vector<Button> buttons;
+	Color bg{ 20, 30, 40, 255 };
 
-	bool checkInputs()
+	GUI_INPUT handleInput()
 	{
 		bool isHovered = false;
 
 		// Check button inputs
-		for (Button* b : buttons)
+		for (Button& b : buttons)
 		{
-			if (b == nullptr) continue;
-			b->isHovered = CheckCollisionPointRec(GetMousePosition(), b->bounds);
-			isHovered = (isHovered || b->isHovered);
-			if (isHovered && b->isClicked(GetMousePosition())) b->clickedAction();
+			b.isHovered = CheckCollisionPointRec(GetMousePosition(), b.bounds);
+			isHovered = (isHovered || b.isHovered);
+			if (isHovered && b.isClicked(GetMousePosition())) 
+				return b.clickedAction();
 		}
 
-		return isHovered;
+		return NONE;
 	}
 
 	void drawGUI()
 	{
-		for (Button* b : buttons)
+		DrawRectangle(0, 0, 100, GetScreenHeight(), bg);
+		for (Button& b : buttons)
 		{
-			if (b != nullptr) 
-				DrawRectangleRec(b->bounds, (b->isHovered) ? DARKGRAY : BLACK);
+			DrawTexture(b.texture, b.bounds.x, b.bounds.y, (b.isHovered) ? GRAY : WHITE);
 		}
 	}
 };

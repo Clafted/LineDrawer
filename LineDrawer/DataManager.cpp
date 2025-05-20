@@ -1,5 +1,11 @@
 #include "DataManager.h"
 
+void DataManager::setupSoftware()
+{
+	if (std::filesystem::create_directory(exportPath))
+		std::cout << "Generated directory: " << exportPath << std::endl;
+}
+
 void DataManager::parseIntsToLines(int ints[], int size, std::list<Line>& dest)
 {
 	dest.clear();
@@ -71,11 +77,32 @@ void DataManager::loadFile(const char* file)
 
 }
 
+void DataManager::listLineFiles()
+{
+	if (!std::filesystem::exists(std::filesystem::path(exportPath)))
+	{
+		std::cout << "No directory " << exportPath << " for exported files" << std::endl;
+		return;
+	}
+
+	std::filesystem::directory_iterator exportDir(exportPath);
+	std::cout << "Listing files:\n" << std::endl;
+	
+	std::string path;
+	for (auto file : exportDir)
+	{
+		path = file.path().string();
+		if (path.length() < 2 || path.substr(path.length()-4) != ".csv") continue;
+		std::cout << path << std::endl;
+	}
+}
+
 bool DataManager::saveData()
 {
 	std::string data;
+	std::string finalPath = exportPath + "/" + file;
 	std::ofstream oS;
-	oS.open(file);
+	oS.open(finalPath);
 
 	if (!oS.is_open())
 	{
@@ -93,7 +120,7 @@ bool DataManager::saveData()
 		oS << data.c_str();
 	}
 	oS.close();
-	std::cout << "Saved data to lines.csv" << std::endl;
+	std::cout << "Saved data to " << finalPath << std::endl;
 
 	return true;
 }

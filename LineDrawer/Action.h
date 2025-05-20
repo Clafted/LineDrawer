@@ -68,10 +68,8 @@ struct EraseAction : public Action
 	void redo(std::list<Line>& lines) override
 	{
 		for (Line l : erasedLines)
-		{
-			for (Line t : lines)
-				if (t == l) lines.remove(t);
-		}
+			lines.remove(l);
+
 	}
 
 	void undo(std::list<Line>& lines) override
@@ -83,7 +81,7 @@ struct EraseAction : public Action
 
 struct MoveAction : public Action
 {
-	Line *movedLine;
+	Line *movedLine = nullptr;
 	Vector2 startPos = {}, offset = {};
 
 	void press(Vector2 mousePos, std::list<Line>& lines) override

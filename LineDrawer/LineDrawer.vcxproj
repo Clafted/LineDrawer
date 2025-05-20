@@ -140,7 +140,14 @@
     <ClInclude Include="Data.h" />
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="Editor.h" />
+    <ClInclude Include="Canvas.h" />
+    <ClInclude Include="Page.h" />
     <ClInclude Include="RaylibGUI.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\redo_button.png" />
+    <Image Include="resources\save_button.png" />
+    <Image Include="resources\undo_button.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
