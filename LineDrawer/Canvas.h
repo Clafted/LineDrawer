@@ -3,16 +3,21 @@
 #include <raylib.h>
 #include <list>
 #include "Data.h"
+#include "Page.h"
 
 // Class for modifying line data directly with mouse-controls
-struct Canvas
+struct Canvas : public GUI_Layer
 {
+	std::list<Line>* lines;
 	Action* action = nullptr, *finishedAction = nullptr;
 	ACTION_TYPE actionType = DRAW;
 	Rectangle bounds{ 0, 0, 800, 600 };
 	Rectangle tBounds{ 0,0,800, 600 };
 	Vec2 offset;
+
 	float zoom = 1.0f;
+
+	Canvas(Rectangle bounds, std::list<Line>* lines) : GUI_Layer(bounds), lines(lines) {}
 
 	bool pointOnCanvas(Vec2 point)
 	{
@@ -36,7 +41,7 @@ struct Canvas
 		}
 	}
 
-	Action* handleInput(std::list<Line>& lines)
+	Action* getAction()
 	{
 		if (!pointOnCanvas(GetMousePosition())) 
 			return nullptr;
@@ -48,16 +53,16 @@ struct Canvas
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 		{
 			action = createAction(actionType);
-			action->press(tMousePos, lines);
+			action->press(tMousePos, *lines);
 		}
 
 		if (action == nullptr) return nullptr;
 
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-			action->down(tMousePos, lines); 
+			action->down(tMousePos, *lines); 
 		else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
 		{
-			action->release(tMousePos, lines);
+			action->release(tMousePos, *lines);
 			finishedAction = action;
 			action = nullptr;
 			return finishedAction;
@@ -66,13 +71,12 @@ struct Canvas
 		return nullptr;
 	}
 
-	void drawCanvas(std::list<Line>& lines)
+	void drawLayer() override
 	{
-		DrawRectangle(tBounds.x + 10 + offset.x*zoom, tBounds.y + 10 + offset.y*zoom, tBounds.width, tBounds.height, Color{ 0, 0, 0, 120 });
 		DrawRectangle(tBounds.x + offset.x*zoom, tBounds.y + offset.y*zoom, tBounds.width, tBounds.height, WHITE);
 		
 		// Lines
-		for (Line l : lines)
+		for (Line l : *lines)
 		{
 			l.start *= zoom;
 			l.end *= zoom;
@@ -86,5 +90,11 @@ struct Canvas
 			Line l{ a->drawnLine.start*zoom, a->drawnLine.end*zoom};
 			DrawLineV(l.start, l.end, RED);
 		}
+
+		DrawRectangleLinesEx(Rectangle{ tBounds.x + offset.x * zoom, 
+										tBounds.y + offset.y * zoom , 
+										tBounds.width, tBounds.height},
+										1, DARKBLUE);
 	}
+
 };

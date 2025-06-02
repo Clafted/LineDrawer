@@ -2,12 +2,16 @@
 #include <raylib.h>
 #include "DataManager.h"
 #include "Editor.h"
+#include "Home.h"
 #include "RaylibGUI.h"
 
+Page* currentPage = nullptr;
 DataManager dataManager;
-Editor editor(dataManager);
 Vector2 startLine = { -1.0f, -1.0f }, mousePos;
 Color background{ 200, 200, 200, 255 };
+
+int Page::pageWidth = 1000;
+int Page::pageHeight = 700;
 
 int main(int argc, char* argv[])
 {
@@ -15,24 +19,27 @@ int main(int argc, char* argv[])
 	SetTargetFPS(30);
 
 	dataManager.setupSoftware();
-	dataManager.loadFile(argv[1]);
-	editor.uploadLines(dataManager.lines);
-	editor.loadEditor();
-
-	dataManager.listLineFiles();
+	currentPage = new Home(dataManager);
+	currentPage->enterPage();
 
 	while (!WindowShouldClose())
 	{
+		if (currentPage->newPage != nullptr)
+		{
+			Page* newPage = currentPage->newPage;
+			delete(currentPage);
+			currentPage = newPage;
+			currentPage->enterPage();
+		}
 		mousePos = GetMousePosition();
-
-		editor.handleInput();
+		currentPage->handleInput();
 
 		BeginDrawing();
 			ClearBackground(background);
-			editor.drawEditor();
+			currentPage->drawPage();
 		EndDrawing();
 	}
-
+	delete(currentPage);
 
 	CloseWindow();
 }

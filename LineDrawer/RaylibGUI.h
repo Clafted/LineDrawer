@@ -1,44 +1,17 @@
 #pragma once
 
 #include <raylib.h>
-
-enum GUI_INPUT
-{
-	NONE, UNDO, REDO, SAVE
-};
-
-struct Button
-{
-	Rectangle bounds;
-	GUI_INPUT val = NONE;
-	Texture2D texture;
-	bool isHovered = false;
-
-	Button(const char* texturePath, Rectangle bounds, GUI_INPUT val)
-		: bounds(bounds), val(val)
-	{
-		texture = LoadTexture(texturePath);
-		texture.width = bounds.width;
-		texture.height = bounds.height;
-	}
-
-	inline bool isClicked(Vector2 mousePos)
-	{ 
-		return CheckCollisionPointRec(mousePos, bounds) 
-				&& IsMouseButtonPressed(MOUSE_BUTTON_LEFT); 
-	}
-
-	GUI_INPUT clickedAction() { return val; };
-};
+#include "Page.h"
 
 #define MAX_BUTTONS 10
 
-struct RaylibGUI
+struct RaylibGUI : public GUI_Layer
 {
-	std::vector<Button> buttons;
 	Color bg{ 20, 30, 40, 255 };
 
-	GUI_INPUT handleInput()
+	RaylibGUI(Rectangle bounds) : GUI_Layer(bounds) {}
+
+	int handleInput() override
 	{
 		bool isHovered = false;
 
@@ -51,10 +24,10 @@ struct RaylibGUI
 				return b.clickedAction();
 		}
 
-		return NONE;
+		return -1;
 	}
 
-	void drawGUI()
+	void drawLayer() override
 	{
 		DrawRectangle(0, 0, 100, GetScreenHeight(), bg);
 		for (Button& b : buttons)

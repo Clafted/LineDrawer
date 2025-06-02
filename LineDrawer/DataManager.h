@@ -25,8 +25,10 @@ public:
 
 	std::list<Line> lines;
 
+	std::vector<std::filesystem::directory_entry> getLineFiles();
 	void setupSoftware();
-	void loadFile(const char* file);
+	bool loadFile(const char* file);
+	bool loadNewFile();
 	void listLineFiles();
 	bool saveData();
 };

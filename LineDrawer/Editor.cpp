@@ -3,7 +3,7 @@
 
 void Editor::useAction(Action* action)
 {
-	action->redo(*lines);
+	action->redo(dataManager.lines);
 	fStack.push(action);
 }
 
@@ -27,10 +27,10 @@ void Editor::handleInput()
 		case KEY_D: canvas.actionType = DRAW; break;
 		}
 
-		if (IsKeyDown(KEY_LEFT)) canvas.offset.x -= 10;
-		if (IsKeyDown(KEY_RIGHT)) canvas.offset.x += 10;
-		if (IsKeyDown(KEY_UP)) canvas.offset.y -= 10;
-		if (IsKeyDown(KEY_DOWN)) canvas.offset.y += 10;
+		if (IsKeyDown(KEY_LEFT)) canvas.offset.x += 10;
+		if (IsKeyDown(KEY_RIGHT)) canvas.offset.x -= 10;
+		if (IsKeyDown(KEY_UP)) canvas.offset.y += 10;
+		if (IsKeyDown(KEY_DOWN)) canvas.offset.y -= 10;
 	}
 
 	canvas.zoomOnPoint(GetMousePosition(), GetMouseWheelMove() * 0.1f);
@@ -38,11 +38,11 @@ void Editor::handleInput()
 
 	switch (gui.handleInput())
 	{
-	case UNDO: undo(); break;
-	case REDO: redo(); break;
-	case SAVE: dataManager.saveData(); break;
-	case NONE:
-		Action *action = canvas.handleInput(*lines);
+	case 1: undo(); break;
+	case 2: redo(); break;
+	case 3: dataManager.saveData(); break;
+	case -1:
+		Action *action = canvas.getAction();
 		if (action != nullptr) useAction(action);
 	}
 }
@@ -50,7 +50,7 @@ void Editor::handleInput()
 void Editor::undo()
 {
 	if (fStack.size() < 1) return;
-	fStack.top()->undo(*lines);
+	fStack.top()->undo(dataManager.lines);
 	bStack.push(fStack.top());
 	fStack.pop();
 }
@@ -58,22 +58,16 @@ void Editor::undo()
 void Editor::redo()
 {
 	if (bStack.size() < 1) return;
-	bStack.top()->redo(*lines);
+	bStack.top()->redo(dataManager.lines);
 	fStack.push(bStack.top());
 	bStack.pop();
 }
 
-void Editor::drawEditor()
+void Editor::enterPage()
 {
-	canvas.drawCanvas(*lines);
-	gui.drawGUI();
-}
-
-void Editor::loadEditor()
-{
-	Button undo("./resources/undo_button.png", Rectangle{ 20.0f, 20.0f, 60.0f, 40.0f }, UNDO),
-		redo("./resources/redo_button.png", Rectangle{ 20.0f, 80.0f, 60.0f, 40.0f }, REDO),
-		save("./resources/save_button.png", Rectangle{20.0f, 140.0f, 60, 30.0f}, SAVE);
+	Button undo("./resources/undo_button.png", Rectangle{ 20.0f, 20.0f, 60.0f, 40.0f }, 1),
+		redo("./resources/redo_button.png", Rectangle{ 20.0f, 80.0f, 60.0f, 40.0f }, 2),
+		save("./resources/save_button.png", Rectangle{20.0f, 140.0f, 60, 30.0f}, 3);
 
 	gui.buttons.push_back(undo);
 	gui.buttons.push_back(redo);

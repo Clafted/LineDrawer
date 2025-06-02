@@ -34,7 +34,7 @@ void DataManager::loadData(const char* file, std::list<Line>& dest)
 		return;
 	}
 
-	format = format.substr(format.find('.') + 1, format.length());
+	format = format.substr(format.find_last_of('.') + 1, format.length());
 	std::cout << "Format: " << format << std::endl;
 
 	if (format == "csv")
@@ -60,21 +60,45 @@ void DataManager::loadData(const char* file, std::list<Line>& dest)
 }
 
 
-void DataManager::loadFile(const char* file)
+bool DataManager::loadFile(const char* file)
 {
+	lines.clear();
 	std::ifstream iS(file);
-	this->file = file;
+	this->file = std::filesystem::path(file).filename().string().c_str();
 
 	if (iS.is_open())
 	{
-		std::cout << "Found file " << file << ". loading data..." << std::endl;
+		std::cout << "Found file " << file << ". loading data..." << std::endl;	
 		loadData(file, lines);
 	}
 	else
 	{
 		std::cout << "No file " << file << " exists. Operating on new data" << std::endl;
+		return false;
+	}
+	iS.close();
+
+	return true;
+}
+
+bool DataManager::loadNewFile()
+{
+	std::string newName = "file.csv";
+
+	// Get non-existing number for file name
+	if (std::filesystem::directory_entry(exportPath + "/file.csv").exists())
+	{
+		int number = 1;
+		while (std::filesystem::directory_entry(exportPath + "/lineFile(" + std::to_string(number) + ").csv").exists())
+			number++;
+
+		newName = "lineFile(" + std::to_string(number) + ").csv";
 	}
 
+	lines.clear();
+	file = newName;
+
+	return true;
 }
 
 void DataManager::listLineFiles()
@@ -92,7 +116,8 @@ void DataManager::listLineFiles()
 	for (auto file : exportDir)
 	{
 		path = file.path().string();
-		if (path.length() < 2 || path.substr(path.length()-4) != ".csv") continue;
+		// Skip non-csv files
+		if (path.find(".csv") == std::string::npos) continue;
 		std::cout << path << std::endl;
 	}
 }
@@ -106,7 +131,7 @@ bool DataManager::saveData()
 
 	if (!oS.is_open())
 	{
-		std::cout << "Failed to save data!" << std::endl;
+		std::cout << "Failed to open save file!" << std::endl;
 		return false;
 	}
 
@@ -123,4 +148,16 @@ bool DataManager::saveData()
 	std::cout << "Saved data to " << finalPath << std::endl;
 
 	return true;
+}
+
+std::vector<std::filesystem::directory_entry> DataManager::getLineFiles()
+{
+	if (!std::filesystem::exists(exportPath)) return {};
+
+	std::vector<std::filesystem::directory_entry> paths;
+	
+	for (auto path : std::filesystem::directory_iterator(exportPath))
+		paths.push_back(path);
+
+	return paths;
 }
