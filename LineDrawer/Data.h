@@ -10,8 +10,7 @@ struct Vec2
 	Vec2(float x, float y) : x(x), y(y) {}
 	Vec2(Vector2 v) : x(v.x), y(v.y) {}
 
-	inline float getLength()
-	{
+	inline float getLength() {
 		return (float)sqrt(x * x + y * y);
 	}
 

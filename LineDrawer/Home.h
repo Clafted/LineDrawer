@@ -2,6 +2,7 @@
 
 #include "DataManager.h"
 #include "Page.h"
+#include "GUI_Layer.h"
 
 struct FileSelector : public GUI_Layer
 {
@@ -42,20 +43,23 @@ struct FileSelector : public GUI_Layer
 
 struct HomeGUI : public GUI_Layer
 {
-	Button newFile = Button("./resources/new_button.png", Rectangle{ 10, Page::pageHeight - 50.0f, 80, 40 }, 0);
+	Button newFile = Button("./resources/new_button.png",
+							Rectangle{ 10, Page::pageHeight - 50.0f, 80, 40 }, 
+							0);
 
 	HomeGUI(Rectangle bounds) : GUI_Layer(bounds) {}
 
-	void loadLayer() override
-	{
+	void loadLayer() override {
 		buttons.push_back(newFile);
 	}
 
 	void drawLayer() override
 	{
-		for (Button& b : buttons)
-		{
-			DrawTexture(b.texture, b.bounds.x, b.bounds.y, (b.isHovered) ? GRAY : WHITE);
+		for (Button& b : buttons) {
+			DrawTexture(b.texture, 
+						b.bounds.x, 
+						b.bounds.y, 
+						(b.isHovered) ? GRAY : WHITE);
 		}
 	}
 };
@@ -82,16 +86,18 @@ struct Home : public Page
 		{
 		case 0:
 			dataManager.loadNewFile();
-			Editor* editor = new Editor(dataManager);
-			newPage = editor;
+			newPage = new Editor(dataManager);
 			return;
 		}
 
 		int clickedFile = fSelector.handleInput();
-		if (clickedFile == -1) return;
-		if (!dataManager.loadFile(fSelector.files[clickedFile].path().string().c_str()))
-			return;
-		Editor *editor = new Editor(dataManager);
-		newPage = editor;
+		if (clickedFile != -1 
+			&& dataManager
+				.loadFile(fSelector
+						.files[clickedFile]
+						.path().string().c_str())) 
+		{
+			newPage = new Editor(dataManager);
+		}
 	}
 };

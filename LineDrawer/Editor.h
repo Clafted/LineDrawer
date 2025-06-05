@@ -40,7 +40,6 @@ struct Editor : public Page
 		}
 	}
 
-	void enterPage() override;
 	void handleInput() override;
 	void useAction(Action* action);
 	void undo();

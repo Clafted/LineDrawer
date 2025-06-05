@@ -2,8 +2,9 @@
 
 void DataManager::setupSoftware()
 {
-	if (std::filesystem::create_directory(exportPath))
+	if (std::filesystem::create_directory(exportPath)) {
 		std::cout << "Generated directory: " << exportPath << std::endl;
+	}
 }
 
 void DataManager::parseIntsToLines(int ints[], int size, std::list<Line>& dest)
@@ -34,8 +35,7 @@ void DataManager::loadData(const char* file, std::list<Line>& dest)
 		return;
 	}
 
-	format = format.substr(format.find_last_of('.') + 1, format.length());
-	std::cout << "Format: " << format << std::endl;
+	format = format.substr(format.find_last_of('.') + 1);
 
 	if (format == "csv")
 	{
@@ -73,11 +73,12 @@ bool DataManager::loadFile(const char* file)
 	}
 	else
 	{
-		std::cout << "No file " << file << " exists. Operating on new data" << std::endl;
+		std::cout << "Failed to access file " << file << ". Operating on new data" << std::endl;
+		iS.close();
 		return false;
 	}
-	iS.close();
 
+	iS.close();
 	return true;
 }
 
@@ -144,6 +145,7 @@ bool DataManager::saveData()
 		if (l == lines.back()) data.erase(data.end() - 1); // Delete extra ','
 		oS << data.c_str();
 	}
+
 	oS.close();
 	std::cout << "Saved data to " << finalPath << std::endl;
 
@@ -156,8 +158,9 @@ std::vector<std::filesystem::directory_entry> DataManager::getLineFiles()
 
 	std::vector<std::filesystem::directory_entry> paths;
 	
-	for (auto path : std::filesystem::directory_iterator(exportPath))
+	for (auto path : std::filesystem::directory_iterator(exportPath)) {
 		paths.push_back(path);
+	}
 
 	return paths;
 }

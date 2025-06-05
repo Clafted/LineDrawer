@@ -53,6 +53,9 @@
     <ClInclude Include="Home.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GUI_Layer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\redo_button.png">
@@ -65,6 +68,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\new_button.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\home_button.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

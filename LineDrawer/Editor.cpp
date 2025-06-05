@@ -1,5 +1,5 @@
 #include "Editor.h"
-
+#include "Home.h"
 
 void Editor::useAction(Action* action)
 {
@@ -41,6 +41,7 @@ void Editor::handleInput()
 	case 1: undo(); break;
 	case 2: redo(); break;
 	case 3: dataManager.saveData(); break;
+	case 4: newPage = new Home(dataManager); break;
 	case -1:
 		Action *action = canvas.getAction();
 		if (action != nullptr) useAction(action);
@@ -61,15 +62,4 @@ void Editor::redo()
 	bStack.top()->redo(dataManager.lines);
 	fStack.push(bStack.top());
 	bStack.pop();
-}
-
-void Editor::enterPage()
-{
-	Button undo("./resources/undo_button.png", Rectangle{ 20.0f, 20.0f, 60.0f, 40.0f }, 1),
-		redo("./resources/redo_button.png", Rectangle{ 20.0f, 80.0f, 60.0f, 40.0f }, 2),
-		save("./resources/save_button.png", Rectangle{20.0f, 140.0f, 60, 30.0f}, 3);
-
-	gui.buttons.push_back(undo);
-	gui.buttons.push_back(redo);
-	gui.buttons.push_back(save);
 }

@@ -3,7 +3,7 @@
 #include <raylib.h>
 #include <list>
 #include "Data.h"
-#include "Page.h"
+#include "GUI_Layer.h"
 
 // Class for modifying line data directly with mouse-controls
 struct Canvas : public GUI_Layer
@@ -19,8 +19,7 @@ struct Canvas : public GUI_Layer
 
 	Canvas(Rectangle bounds, std::list<Line>* lines) : GUI_Layer(bounds), lines(lines) {}
 
-	bool pointOnCanvas(Vec2 point)
-	{
+	inline bool pointOnCanvas(Vec2 point) {
 		return CheckCollisionPointRec(point, tBounds);
 	}
 
@@ -43,12 +42,13 @@ struct Canvas : public GUI_Layer
 
 	Action* getAction()
 	{
-		if (!pointOnCanvas(GetMousePosition())) 
+		if (!pointOnCanvas(GetMousePosition())) {
 			return nullptr;
+		}
 
-		Vector2 tMousePos = (Vec2)GetMousePosition() 
-							* (1.0f/zoom) 
-							+ Vec2(tBounds.x, tBounds.y);
+		Vector2 tMousePos = ((Vec2)GetMousePosition()
+							- Vec2(tBounds.x, tBounds.y)
+							- offset) * (1.0f/zoom);
 
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 		{
@@ -58,8 +58,9 @@ struct Canvas : public GUI_Layer
 
 		if (action == nullptr) return nullptr;
 
-		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-			action->down(tMousePos, *lines); 
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+			action->down(tMousePos, *lines);
+		}
 		else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
 		{
 			action->release(tMousePos, *lines);
@@ -73,28 +74,28 @@ struct Canvas : public GUI_Layer
 
 	void drawLayer() override
 	{
-		DrawRectangle(tBounds.x + offset.x*zoom, tBounds.y + offset.y*zoom, tBounds.width, tBounds.height, WHITE);
+		camera.offset = offset;
+		camera.zoom = zoom;
+		BeginMode2D(camera);
+			DrawRectangleRec(tBounds, WHITE);
 		
-		// Lines
-		for (Line l : *lines)
-		{
-			l.start *= zoom;
-			l.end *= zoom;
-			DrawLineV(l.start, l.end, l.touchingLine(GetMousePosition()) ? BLUE : BLACK);
-		}
+			// Lines
+			for (Line l : *lines)
+			{
+				l.start *= zoom;
+				l.end *= zoom;
+				DrawLineV(l.start, l.end, l.touchingLine(GetMousePosition()) ? BLUE : BLACK);
+			}
 
-		// Currently-drawing line
-		if (actionType == DRAW && action != nullptr)
-		{
-			DrawAction* a = (DrawAction*)action;
-			Line l{ a->drawnLine.start*zoom, a->drawnLine.end*zoom};
-			DrawLineV(l.start, l.end, RED);
-		}
+			// Currently-drawing line
+			if (actionType == DRAW && action != nullptr)
+			{
+				DrawAction* a = (DrawAction*)action;
+				DrawLineV(a->drawnLine.start, a->drawnLine.end, RED);
+			}
 
-		DrawRectangleLinesEx(Rectangle{ tBounds.x + offset.x * zoom, 
-										tBounds.y + offset.y * zoom , 
-										tBounds.width, tBounds.height},
-										1, DARKBLUE);
+			DrawRectangleLinesEx(tBounds,1, DARKBLUE);
+		EndMode2D();
 	}
 
 };

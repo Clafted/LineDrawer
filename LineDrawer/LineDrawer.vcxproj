@@ -141,11 +141,13 @@
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="Canvas.h" />
+    <ClInclude Include="GUI_Layer.h" />
     <ClInclude Include="Home.h" />
     <ClInclude Include="Page.h" />
     <ClInclude Include="RaylibGUI.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="resources\home_button.png" />
     <Image Include="resources\new_button.png" />
     <Image Include="resources\redo_button.png" />
     <Image Include="resources\save_button.png" />
