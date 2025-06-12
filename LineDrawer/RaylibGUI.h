@@ -15,12 +15,18 @@ struct RaylibGUI : public GUI_Layer
 		Button undo("./resources/undo_button.png", Rectangle{ 20.0f, 20.0f, 60.0f, 40.0f }, 1),
 			redo("./resources/redo_button.png", Rectangle{ 20.0f, 80.0f, 60.0f, 40.0f }, 2),
 			save("./resources/save_button.png", Rectangle{ 20.0f, 140.0f, 60, 30.0f }, 3),
-			home("./resources/home_button.png", Rectangle{ 20.0f, 190.0f, 60, 60.0f }, 4);
+			draw("./resources/pencil_button.png", Rectangle{ 20.0f, 190.0f, 60, 60.0f }, 4),
+			erase("./resources/eraser_button.png", Rectangle{ 20.0f, 270.0f, 60, 60.0f }, 5),
+			move("./resources/move_button.png", Rectangle{ 20.0f, 350.0f, 60, 60.0f }, 6),
+			home("./resources/home_button.png", Rectangle{ 20.0f, 430.0f, 60, 60.0f }, 7);
 
 		buttons.push_back(undo);
 		buttons.push_back(redo);
 		buttons.push_back(save);
 		buttons.push_back(home);
+		buttons.push_back(draw);
+		buttons.push_back(erase);
+		buttons.push_back(move);
 	}
 
 	int handleInput() override

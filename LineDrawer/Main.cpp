@@ -31,6 +31,7 @@ int main(int argc, char* argv[])
 			currentPage = newPage;
 			currentPage->enterPage();
 		}
+
 		mousePos = GetMousePosition();
 		currentPage->handleInput();
 

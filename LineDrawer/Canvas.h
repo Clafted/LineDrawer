@@ -2,6 +2,7 @@
 
 #include <raylib.h>
 #include <list>
+#include <string>
 #include "Data.h"
 #include "GUI_Layer.h"
 
@@ -11,11 +12,10 @@ struct Canvas : public GUI_Layer
 	std::list<Line>* lines;
 	Action* action = nullptr, *finishedAction = nullptr;
 	ACTION_TYPE actionType = DRAW;
-	Rectangle bounds{ 0, 0, 800, 600 };
+	Rectangle canvasBounds{ 0, 0, 800, 600 };
 	Rectangle tBounds{ 0,0,800, 600 };
-	Vec2 offset;
+	Vec2 canvMousePos;
 
-	float zoom = 1.0f;
 
 	Canvas(Rectangle bounds, std::list<Line>* lines) : GUI_Layer(bounds), lines(lines) {}
 
@@ -23,11 +23,18 @@ struct Canvas : public GUI_Layer
 		return CheckCollisionPointRec(point, tBounds);
 	}
 
-	void zoomOnPoint(Vec2 point, float zoom)
+	void moveBy(Vec2 offset)
 	{
-		this->zoom += zoom;
-		tBounds.width = bounds.width * this->zoom;
-		tBounds.height = bounds.height * this->zoom;
+		tBounds.x += offset.x;
+		tBounds.y += offset.y;
+		camera.offset = Vector2{ tBounds.x, tBounds.y };
+	}
+
+	void zoomBy(float zoom)
+	{
+		camera.zoom += zoom;
+		tBounds.width = canvasBounds.width * camera.zoom;
+		tBounds.height = canvasBounds.height * camera.zoom;
 	}
 
 	Action* createAction(ACTION_TYPE type)
@@ -42,28 +49,28 @@ struct Canvas : public GUI_Layer
 
 	Action* getAction()
 	{
-		if (!pointOnCanvas(GetMousePosition())) {
+		canvMousePos = ((Vec2)GetMousePosition()
+							- Vec2(tBounds.x, tBounds.y))
+							* (1.0f/camera.zoom);
+
+		if (!pointOnCanvas(canvMousePos)) {
 			return nullptr;
 		}
-
-		Vector2 tMousePos = ((Vec2)GetMousePosition()
-							- Vec2(tBounds.x, tBounds.y)
-							- offset) * (1.0f/zoom);
 
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 		{
 			action = createAction(actionType);
-			action->press(tMousePos, *lines);
+			action->press(canvMousePos, *lines);
 		}
 
 		if (action == nullptr) return nullptr;
 
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-			action->down(tMousePos, *lines);
+			action->down(canvMousePos, *lines);
 		}
 		else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
 		{
-			action->release(tMousePos, *lines);
+			action->release(canvMousePos, *lines);
 			finishedAction = action;
 			action = nullptr;
 			return finishedAction;
@@ -74,17 +81,13 @@ struct Canvas : public GUI_Layer
 
 	void drawLayer() override
 	{
-		camera.offset = offset;
-		camera.zoom = zoom;
 		BeginMode2D(camera);
-			DrawRectangleRec(tBounds, WHITE);
+			DrawRectangleRec(canvasBounds, WHITE);
 		
 			// Lines
 			for (Line l : *lines)
 			{
-				l.start *= zoom;
-				l.end *= zoom;
-				DrawLineV(l.start, l.end, l.touchingLine(GetMousePosition()) ? BLUE : BLACK);
+				DrawLineV(l.start, l.end, l.touchingLine(canvMousePos) ? BLUE : BLACK);
 			}
 
 			// Currently-drawing line
@@ -94,8 +97,21 @@ struct Canvas : public GUI_Layer
 				DrawLineV(a->drawnLine.start, a->drawnLine.end, RED);
 			}
 
-			DrawRectangleLinesEx(tBounds,1, DARKBLUE);
+			DrawCircleLines(canvMousePos.x, canvMousePos.y, 5, BLACK);
+
+			DrawRectangleLinesEx(canvasBounds,1, DARKBLUE);
 		EndMode2D();
+
+		DrawRectangleLinesEx(tBounds, 1, RED);
+		std::string actionName;
+		switch (actionType)
+		{
+		case DRAW: actionName = "DRAW"; break;
+		case ERASE: actionName = "ERASE"; break;
+		case MOVE: actionName = "MOVE"; break;
+
+		}
+		DrawText(actionName.c_str(), bounds.x + 10, bounds.y + bounds.height - 30, 20, BLACK);
 	}
 
 };

@@ -56,6 +56,12 @@
     <ClInclude Include="GUI_Layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FileSelector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HomeGUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\redo_button.png">
@@ -71,6 +77,15 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\home_button.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\pencil_button.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\eraser_button.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\move_button.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

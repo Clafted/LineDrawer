@@ -27,13 +27,13 @@ void Editor::handleInput()
 		case KEY_D: canvas.actionType = DRAW; break;
 		}
 
-		if (IsKeyDown(KEY_LEFT)) canvas.offset.x += 10;
-		if (IsKeyDown(KEY_RIGHT)) canvas.offset.x -= 10;
-		if (IsKeyDown(KEY_UP)) canvas.offset.y += 10;
-		if (IsKeyDown(KEY_DOWN)) canvas.offset.y -= 10;
+		if (IsKeyDown(KEY_LEFT)) canvas.moveBy(Vector2{ 10,0 });
+		if (IsKeyDown(KEY_RIGHT)) canvas.moveBy(Vector2{ -10, 0 });
+		if (IsKeyDown(KEY_UP)) canvas.moveBy(Vector2{ 0, 10 });
+		if (IsKeyDown(KEY_DOWN)) canvas.moveBy(Vector2{ 0, -10 });
 	}
 
-	canvas.zoomOnPoint(GetMousePosition(), GetMouseWheelMove() * 0.1f);
+	canvas.zoomBy(GetMouseWheelMove() * 0.1f);
 	
 
 	switch (gui.handleInput())
@@ -41,7 +41,10 @@ void Editor::handleInput()
 	case 1: undo(); break;
 	case 2: redo(); break;
 	case 3: dataManager.saveData(); break;
-	case 4: newPage = new Home(dataManager); break;
+	case 4: canvas.actionType = DRAW; break;
+	case 5: canvas.actionType = ERASE; break;
+	case 6: canvas.actionType = MOVE; break;
+	case 7: newPage = new Home(dataManager); break;
 	case -1:
 		Action *action = canvas.getAction();
 		if (action != nullptr) useAction(action);

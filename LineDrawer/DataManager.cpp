@@ -43,16 +43,16 @@ void DataManager::loadData(const char* file, std::list<Line>& dest)
 		char data[MAX_STREAM_SIZE];
 
 		iS.getline(data, MAX_STREAM_SIZE);
-
 		for (int i = 0; i < MAX_STREAM_SIZE; i++)
 		{
-			if (data[i] == ',' || data[i] == '\0')
+			if (val != "" && (data[i] == ',' || data[i] == '\0'))
 			{
 				loadedInts.push_back(std::stoi(val));
 				val = "";
-				if (data[i] == '\0') break;
 			}
 			else val += data[i];
+
+			if (data[i] == '\0') break;
 		}
 	}
 
