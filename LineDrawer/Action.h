@@ -83,6 +83,10 @@ struct MoveAction : public Action
 		startPos = mousePos;
 	}
 
+	inline void down(Vector2 mousePos, std::list<Line>& lines) override {
+		offset = Vec2(mousePos) - startPos;
+	}
+
 	inline void release(Vector2 mousePos, std::list<Line>& lines) override {
 		offset = Vec2(mousePos) - startPos;
 	}

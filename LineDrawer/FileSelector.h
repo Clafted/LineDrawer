@@ -22,7 +22,6 @@ struct FileSelector : public GUI_Layer
 
 	void loadLayer() override
 	{
-
 		files = dataManager.getLineFiles();
 		for (int i = 0; i < files.size(); i++) {
 			buttons.push_back(Button("", Rectangle{ 10, 10.0f + 220 * i, Page::pageWidth - 20.0f, 200 }, i));

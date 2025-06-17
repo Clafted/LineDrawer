@@ -13,11 +13,15 @@ struct Canvas : public GUI_Layer
 	Action* action = nullptr, *finishedAction = nullptr;
 	ACTION_TYPE actionType = DRAW;
 	Rectangle canvasBounds{ 0, 0, 800, 600 };
-	Rectangle tBounds{ 0,0,800, 600 };
+	Rectangle tBounds=canvasBounds;
 	Vec2 canvMousePos;
 
 
-	Canvas(Rectangle bounds, std::list<Line>* lines) : GUI_Layer(bounds), lines(lines) {}
+	Canvas(Rectangle bounds, std::list<Line>* lines) : GUI_Layer(bounds), lines(lines) {
+		camera.offset = { 0 };
+		camera.target = Vector2{ (Page::pageWidth - canvasBounds.width) / -2.0f, (Page::pageHeight-canvasBounds.height) / -2.0f };
+
+	}
 
 	inline bool pointOnCanvas(Vec2 point) {
 		return CheckCollisionPointRec(point, tBounds);
@@ -25,16 +29,13 @@ struct Canvas : public GUI_Layer
 
 	void moveBy(Vec2 offset)
 	{
-		tBounds.x += offset.x;
-		tBounds.y += offset.y;
-		camera.offset = Vector2{ tBounds.x, tBounds.y };
+		camera.target.x += offset.x;
+		camera.target.y += offset.y;
 	}
 
 	void zoomBy(float zoom)
 	{
 		camera.zoom += zoom;
-		tBounds.width = canvasBounds.width * camera.zoom;
-		tBounds.height = canvasBounds.height * camera.zoom;
 	}
 
 	Action* createAction(ACTION_TYPE type)
@@ -49,9 +50,7 @@ struct Canvas : public GUI_Layer
 
 	Action* getAction()
 	{
-		canvMousePos = ((Vec2)GetMousePosition()
-							- Vec2(tBounds.x, tBounds.y))
-							* (1.0f/camera.zoom);
+		canvMousePos = GetScreenToWorld2D(GetMousePosition(), camera);;
 
 		if (!pointOnCanvas(canvMousePos)) {
 			return nullptr;
@@ -85,33 +84,51 @@ struct Canvas : public GUI_Layer
 			DrawRectangleRec(canvasBounds, WHITE);
 		
 			// Lines
-			for (Line l : *lines)
-			{
+			for (Line l : *lines) {
 				DrawLineV(l.start, l.end, l.touchingLine(canvMousePos) ? BLUE : BLACK);
 			}
 
 			// Currently-drawing line
-			if (actionType == DRAW && action != nullptr)
+			if (action != nullptr)
 			{
-				DrawAction* a = (DrawAction*)action;
-				DrawLineV(a->drawnLine.start, a->drawnLine.end, RED);
+				switch (actionType)
+				{
+				case DRAW:
+				{
+					DrawAction* a = (DrawAction*)action;
+					DrawLineV(a->drawnLine.start, a->drawnLine.end, RED);
+				}
+					break;
+				case MOVE:
+				{
+					MoveAction* b = (MoveAction*)action;
+					DrawLine(b->movedLine->start.x + b->offset.x,
+						b->movedLine->start.y + b->offset.y,
+						b->movedLine->end.x + b->offset.x,
+						b->movedLine->end.y + b->offset.y,
+						RED);
+				}
+					break;
+				}
 			}
 
 			DrawCircleLines(canvMousePos.x, canvMousePos.y, 5, BLACK);
-
-			DrawRectangleLinesEx(canvasBounds,1, DARKBLUE);
+			DrawRectangleLinesEx(canvasBounds, 1, RED);
 		EndMode2D();
 
-		DrawRectangleLinesEx(tBounds, 1, RED);
-		std::string actionName;
+		// Tool info
+		std::string str;
 		switch (actionType)
 		{
-		case DRAW: actionName = "DRAW"; break;
-		case ERASE: actionName = "ERASE"; break;
-		case MOVE: actionName = "MOVE"; break;
+		case DRAW: str = "DRAW"; break;
+		case ERASE: str = "ERASE"; break;
+		case MOVE: str = "MOVE"; break;
 
 		}
-		DrawText(actionName.c_str(), bounds.x + 10, bounds.y + bounds.height - 30, 20, BLACK);
+
+		DrawText(str.c_str(), bounds.x + 10, bounds.y + bounds.height - 30, 20, LIGHTGRAY);
+		str = "(" + std::to_string((int)canvMousePos.x) + ", " + std::to_string((int)canvMousePos.y) + ")";
+		DrawText(str.c_str(), bounds.x + 10, bounds.y + bounds.height - 55, 15, LIGHTGRAY);
 	}
 
 };

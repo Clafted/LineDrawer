@@ -145,6 +145,7 @@
     <ClInclude Include="GUI_Layer.h" />
     <ClInclude Include="Home.h" />
     <ClInclude Include="HomeGUI.h" />
+    <ClInclude Include="LineDrawerProgram.h" />
     <ClInclude Include="Page.h" />
     <ClInclude Include="RaylibGUI.h" />
   </ItemGroup>

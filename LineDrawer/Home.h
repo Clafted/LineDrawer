@@ -16,6 +16,7 @@ struct Home : public Page
 
 	void enterPage() override
 	{
+		SetWindowTitle("Home | LineDrawer");
 		fSelector.loadLayer();
 		homeGUI.loadLayer();
 		layers.push_back(&fSelector);
@@ -33,13 +34,14 @@ struct Home : public Page
 		}
 
 		int clickedFile = fSelector.handleInput();
-		if (clickedFile != -1 
-			&& dataManager
-				.loadFile(fSelector
-						.files[clickedFile]
-						.path().string().c_str())) 
+		
+		if (clickedFile != -1) 
 		{
-			newPage = new Editor(dataManager);
+			std::string file = fSelector.files[clickedFile].path().string();
+			if (dataManager.loadFile(file.c_str())) {
+				SetWindowTitle((file + " | LineDrawer").c_str());
+				newPage = new Editor(dataManager);
+			}
 		}
 	}
 };
