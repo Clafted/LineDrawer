@@ -19,7 +19,7 @@ struct Editor : public Page
 	Editor(DataManager& dataManager) 
 		: dataManager(dataManager), 
 		canvas(Rectangle{ 100, 0, (float)Page::pageWidth - 100, (float)Page::pageHeight }, & dataManager.lines), 
-		gui(Rectangle{ 0, 0, (float)Page::pageWidth, (float)Page::pageHeight })	
+		gui(Rectangle{ 0, 0, (float)Page::pageWidth, (float)Page::pageHeight })
 	{	
 		layers.push_back(&canvas);
 		layers.push_back(&gui);

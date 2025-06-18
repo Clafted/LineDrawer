@@ -7,8 +7,8 @@
 struct Page
 {
 	static int pageWidth, pageHeight;
-
 	std::vector<GUI_Layer*> layers;
+	GUI_Layer* activeLayer = nullptr;
 	Page* newPage = nullptr;
 
 	virtual void enterPage() {};

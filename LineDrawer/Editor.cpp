@@ -9,6 +9,20 @@ void Editor::useAction(Action* action)
 
 void Editor::handleInput()
 {
+	switch (gui.handleInput())
+	{
+	case 1: undo(); break;
+	case 2: redo(); break;
+	case 3: dataManager.saveData(); break;
+	case 4: canvas.actionType = DRAW; break;
+	case 5: canvas.actionType = ERASE; break;
+	case 6: canvas.actionType = MOVE; break;
+	case 7: newPage = new Home(dataManager); break;
+	case -1:
+		Action * action = canvas.getAction();
+		if (action != nullptr) useAction(action);
+	}
+
 	if (IsKeyDown(KEY_LEFT_CONTROL))
 	{
 		switch (GetKeyPressed())
@@ -34,21 +48,6 @@ void Editor::handleInput()
 	}
 
 	canvas.zoomBy(GetMouseWheelMove() * 0.1f);
-	
-
-	switch (gui.handleInput())
-	{
-	case 1: undo(); break;
-	case 2: redo(); break;
-	case 3: dataManager.saveData(); break;
-	case 4: canvas.actionType = DRAW; break;
-	case 5: canvas.actionType = ERASE; break;
-	case 6: canvas.actionType = MOVE; break;
-	case 7: newPage = new Home(dataManager); break;
-	case -1:
-		Action *action = canvas.getAction();
-		if (action != nullptr) useAction(action);
-	}
 }
 
 void Editor::undo()

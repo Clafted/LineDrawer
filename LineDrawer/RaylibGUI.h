@@ -9,7 +9,9 @@ struct RaylibGUI : public GUI_Layer
 {
 	Color bg{ 20, 30, 40, 255 };
 
-	RaylibGUI(Rectangle bounds) : GUI_Layer(bounds) 
+	TextField field;
+
+	RaylibGUI(Rectangle bounds) : GUI_Layer(bounds), field(Rectangle{ 100, 100, 200, 30 })
 	{
 		// Buttons 20 pixels apart
 		Button undo("./resources/undo_button.png", Rectangle{ 20.0f, 20.0f, 60.0f, 40.0f }, 1),
@@ -32,7 +34,7 @@ struct RaylibGUI : public GUI_Layer
 	int handleInput() override
 	{
 		bool isHovered = false;
-
+		field.checkInput();
 		// Check button inputs
 		for (Button& b : buttons)
 		{
@@ -50,7 +52,10 @@ struct RaylibGUI : public GUI_Layer
 	{
 		DrawRectangle(0, 0, 100, GetScreenHeight(), bg);
 		for (Button& b : buttons) {
-			DrawTexture(b.texture, b.bounds.x, b.bounds.y, (b.isHovered) ? GRAY : WHITE);
+			DrawTexture(b.texture, b.bounds.x, b.bounds.y, 
+						(b.isHovered) ? GRAY : WHITE);
 		}
+
+		field.draw();
 	}
 };
