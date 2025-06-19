@@ -10,7 +10,7 @@ struct Home : public Page
 {
 	DataManager& dataManager;
 	FileSelector fSelector = FileSelector(Rectangle{ 0, 0, (float)Page::pageWidth, (float)Page::pageHeight }, dataManager);
-	HomeGUI homeGUI = HomeGUI(Rectangle{ 0, 0, (float)Page::pageWidth, (float)Page::pageHeight });
+	HomeGUI homeGUI = HomeGUI(Rectangle{ 0, Page::pageHeight - 60.0f, (float)Page::pageWidth, 60});
 
 	Home(DataManager& dataManager) : dataManager(dataManager) {}
 
@@ -19,25 +19,28 @@ struct Home : public Page
 		SetWindowTitle("Home | LineDrawer");
 		fSelector.loadLayer();
 		homeGUI.loadLayer();
-		layers.push_back(&fSelector);
-		layers.push_back(&homeGUI);
+		gui.addLayer(&fSelector);
+		gui.addLayer(&homeGUI);
 	}
 
 	void handleInput() override
 	{
-		switch (homeGUI.checkButtonInput())
+		GUI_Layer* activeLayer = gui.getActiveInputLayer();
+		if (activeLayer == nullptr) return;
+		
+		int clickedButton = gui.getActiveInput().button;
+
+		switch (clickedButton)
 		{
 		case 0:
 			dataManager.loadNewFile();
 			newPage = new Editor(dataManager);
 			return;
 		}
-
-		int clickedFile = fSelector.handleInput();
 		
-		if (clickedFile != -1) 
+		if (clickedButton != -1) 
 		{
-			std::string file = fSelector.files[clickedFile].path().string();
+			std::string file = fSelector.files[clickedButton].path().string();
 			if (dataManager.loadFile(file.c_str())) {
 				SetWindowTitle((file + " | LineDrawer").c_str());
 				newPage = new Editor(dataManager);

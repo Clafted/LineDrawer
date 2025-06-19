@@ -12,17 +12,19 @@ struct Editor : public Page
 {
 	std::stack<Action*> fStack, bStack;
 
-	RaylibGUI gui;
+	RaylibGUI toolbar;
 	Canvas canvas;
 	DataManager& dataManager;
 
 	Editor(DataManager& dataManager) 
 		: dataManager(dataManager), 
 		canvas(Rectangle{ 100, 0, (float)Page::pageWidth - 100, (float)Page::pageHeight }, & dataManager.lines), 
-		gui(Rectangle{ 0, 0, (float)Page::pageWidth, (float)Page::pageHeight })
+		toolbar(Rectangle{ 0, 0, 100, (float)Page::pageHeight })
 	{	
 		layers.push_back(&canvas);
-		layers.push_back(&gui);
+		layers.push_back(&toolbar);
+		gui.addLayer(&canvas);
+		gui.addLayer(&toolbar);
 	}
 
 	~Editor()

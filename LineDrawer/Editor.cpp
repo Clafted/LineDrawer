@@ -9,17 +9,24 @@ void Editor::useAction(Action* action)
 
 void Editor::handleInput()
 {
-	switch (gui.handleInput())
+	GUI_Layer* activeLayer = gui.getActiveInputLayer();
+	if (activeLayer == nullptr) return;
+	if (activeLayer == &toolbar)
 	{
-	case 1: undo(); break;
-	case 2: redo(); break;
-	case 3: dataManager.saveData(); break;
-	case 4: canvas.actionType = DRAW; break;
-	case 5: canvas.actionType = ERASE; break;
-	case 6: canvas.actionType = MOVE; break;
-	case 7: newPage = new Home(dataManager); break;
-	case -1:
-		Action * action = canvas.getAction();
+		switch (gui.getActiveInput().button)
+		{
+		case 1: undo(); break;
+		case 2: redo(); break;
+		case 3: dataManager.saveData(); break;
+		case 4: canvas.actionType = DRAW; break;
+		case 5: canvas.actionType = ERASE; break;
+		case 6: canvas.actionType = MOVE; break;
+		case 7: newPage = new Home(dataManager); break;
+		}
+	}
+	else if (activeLayer == &canvas) 
+	{
+		Action* action = canvas.getAction();
 		if (action != nullptr) useAction(action);
 	}
 

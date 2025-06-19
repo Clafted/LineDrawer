@@ -2,13 +2,14 @@
 
 #include <raylib.h>
 #include <vector>
-#include "GUI_Layer.h"
+#include "GUI.h"
 
 struct Page
 {
 	static int pageWidth, pageHeight;
 	std::vector<GUI_Layer*> layers;
 	GUI_Layer* activeLayer = nullptr;
+	GUI gui;
 	Page* newPage = nullptr;
 
 	virtual void enterPage() {};
@@ -16,8 +17,6 @@ struct Page
 
 	void drawPage() 
 	{
-		for (GUI_Layer* layer : layers) {
-			layer->drawLayer();
-		}
+		gui.drawGUI();
 	};
 };

@@ -24,7 +24,8 @@ struct Button
 				&& IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 	}
 
-	int clickedAction() { return val; };
+	inline int clickedAction() { return val; };
+
 };
 
 class TextField
@@ -66,27 +67,39 @@ public:
 	}
 };
 
-struct GUI_Layer
+struct Input
 {
-	struct Input
-	{
-		int keyPress;
-		int mousePress;
-		Vector2 mousePos;
-	};
+	int key;
+	int mouse;
+	int button;
+	Vector2 mousePos;
+};
+
+class GUI_Layer
+{
+protected:
 
 	std::vector<Button> buttons;
 	Camera2D camera = { 0 };
 	Rectangle bounds;
 	Input input;
 
-	GUI_Layer(Rectangle bounds) : bounds(bounds) {
-		camera.zoom = 1.0f;
-	}
+public:
+
+	GUI_Layer(Rectangle bounds) : bounds(bounds) { camera.zoom = 1.0f; }
 
 	virtual void drawLayer() {};
 	virtual void loadLayer() {};
-	virtual int handleInput() { return -1; };
+	virtual bool checkInput() { return false; };
+	virtual bool checkLayerActivation() { return clickedInBounds(); }
+
+	inline bool clickedInBounds() {
+		return (CheckCollisionPointRec(GetMousePosition(), bounds)
+			&& IsMouseButtonPressed(MOUSE_BUTTON_LEFT));
+	}
+
+	const inline Input getInput() { return input; }
+	const inline Rectangle getBounds() { return bounds;}
 
 	void setLayerBounds(Rectangle bounds)
 	{
@@ -95,18 +108,19 @@ struct GUI_Layer
 		camera.target = camera.offset;
 	}
 
-	int checkButtonInput()
+	bool checkButtonInput()
 	{
-		Vector2 tMousePos = GetMousePosition();
-		tMousePos.x -= bounds.x;
-		tMousePos.y -= bounds.y;
+		Vector2 worldMousePos = GetScreenToWorld2D(GetMousePosition(), camera);
 
 		for (Button& b : buttons)
 		{
-			b.isHovered = CheckCollisionPointRec(tMousePos, b.bounds);
-			if (b.isHovered && b.isClicked(tMousePos)) return b.val;
+			b.isHovered = CheckCollisionPointRec(worldMousePos, b.bounds);
+			if (b.isHovered && b.isClicked(worldMousePos)) {
+				input.button = b.val;
+				return true;
+			}
 		}
 
-		return -1;
+		return false;
 	}
 };

@@ -9,6 +9,11 @@ struct HomeGUI : public GUI_Layer
 
 	HomeGUI(Rectangle bounds) : GUI_Layer(bounds) {}
 
+	bool checkInput() override
+	{
+		return checkButtonInput();
+	}
+
 	void loadLayer() override {
 		buttons.push_back(newFile);
 	}

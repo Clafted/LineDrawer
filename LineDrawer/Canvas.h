@@ -17,14 +17,19 @@ struct Canvas : public GUI_Layer
 	Vec2 canvMousePos;
 
 
-	Canvas(Rectangle bounds, std::list<Line>* lines) : GUI_Layer(bounds), lines(lines) {
+	Canvas(Rectangle bounds, std::list<Line>* lines) : GUI_Layer(bounds), lines(lines) 
+	{
 		camera.offset = { 0 };
 		camera.target = Vector2{ (Page::pageWidth - canvasBounds.width) / -2.0f, (Page::pageHeight-canvasBounds.height) / -2.0f };
-
 	}
 
 	inline bool pointOnCanvas(Vec2 point) {
 		return CheckCollisionPointRec(point, tBounds);
+	}
+
+	bool checkInput() override
+	{
+		return true;
 	}
 
 	void moveBy(Vec2 offset)
@@ -102,6 +107,7 @@ struct Canvas : public GUI_Layer
 				case MOVE:
 				{
 					MoveAction* b = (MoveAction*)action;
+					if (b->movedLine == nullptr) break;
 					DrawLine(b->movedLine->start.x + b->offset.x,
 						b->movedLine->start.y + b->offset.y,
 						b->movedLine->end.x + b->offset.x,

@@ -31,7 +31,7 @@ struct RaylibGUI : public GUI_Layer
 		buttons.push_back(move);
 	}
 
-	int handleInput() override
+	bool checkInput() override
 	{
 		bool isHovered = false;
 		field.checkInput();
@@ -40,18 +40,21 @@ struct RaylibGUI : public GUI_Layer
 		{
 			b.isHovered = CheckCollisionPointRec(GetMousePosition(), b.bounds);
 			isHovered = (isHovered || b.isHovered);
-			if (isHovered && b.isClicked(GetMousePosition())) {
-				return b.clickedAction();
+			if (isHovered && b.isClicked(GetMousePosition())) 
+			{
+				input.button = b.clickedAction();
+				return true;
 			}
 		}
 
-		return -1;
+		return clickedInBounds();
 	}
 
 	void drawLayer() override
 	{
 		DrawRectangle(0, 0, 100, GetScreenHeight(), bg);
-		for (Button& b : buttons) {
+		for (Button& b : buttons) 
+		{
 			DrawTexture(b.texture, b.bounds.x, b.bounds.y, 
 						(b.isHovered) ? GRAY : WHITE);
 		}
