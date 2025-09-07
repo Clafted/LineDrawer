@@ -27,8 +27,7 @@ struct Canvas : public GUI_Layer
 		return CheckCollisionPointRec(point, tBounds);
 	}
 
-	bool checkInput() override
-	{
+	bool checkInput() override {
 		return true;
 	}
 
@@ -38,8 +37,7 @@ struct Canvas : public GUI_Layer
 		camera.target.y += offset.y;
 	}
 
-	void zoomBy(float zoom)
-	{
+	void zoomBy(float zoom) {
 		camera.zoom += zoom;
 	}
 

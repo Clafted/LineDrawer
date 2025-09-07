@@ -143,6 +143,7 @@
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="FileSelector.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="GUI_Element.h" />
     <ClInclude Include="GUI_Layer.h" />
     <ClInclude Include="Home.h" />
     <ClInclude Include="HomeGUI.h" />

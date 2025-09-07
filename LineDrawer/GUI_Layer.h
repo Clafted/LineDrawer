@@ -3,6 +3,7 @@
 #include <iostream>
 #include <raylib.h>
 
+
 struct Button
 {
 	Rectangle bounds;
@@ -18,10 +19,8 @@ struct Button
 		texture.height = bounds.height;
 	}
 
-	inline bool isClicked(Vector2 mousePos)
-	{
-		return CheckCollisionPointRec(mousePos, bounds)
-				&& IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+	inline bool isClicked(Vector2 mousePos) {
+		return CheckCollisionPointRec(mousePos, bounds) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 	}
 
 	inline int clickedAction() { return val; };
@@ -47,14 +46,18 @@ public:
 	{
 		int keyPressed = GetKeyPressed();
 		if (keyPressed == KEY_NULL) return;
+		if (32 <= keyPressed && keyPressed <= 126)
+		{
+			char newChar[2] = { keyPressed, '\0'};
+			if (IsKeyDown(KEY_LEFT_SHIFT)) newChar[0] -= 32;
+			text.insert(cursor++, newChar);
+		}
+
 		switch (keyPressed)
 		{
 		case KEY_BACKSPACE:
 			if (cursor == 0) break;
 			text.erase(--cursor);
-			break;
-		default:
-			text = text.substr(0, cursor) + (char)keyPressed + text.substr(cursor++);
 			break;
 		}
 	}
@@ -63,7 +66,9 @@ public:
 	{
 		DrawRectangleRec(bounds, WHITE);
 		DrawRectangleLinesEx(bounds, 2, BLACK);
-		DrawText(text.c_str(), bounds.x, bounds.y + 2, bounds.height-4, BLACK);
+		BeginScissorMode(bounds.x, bounds.y, bounds.width, bounds.height);
+		DrawText(text.c_str(), bounds.x, bounds.y + 2, bounds.height - 4, BLACK);
+		EndScissorMode();
 	}
 };
 

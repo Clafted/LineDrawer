@@ -15,8 +15,7 @@ struct Page
 	virtual void enterPage() {};
 	virtual void handleInput() {};
 
-	void drawPage() 
-	{
+	void drawPage() {
 		gui.drawGUI();
 	};
 };

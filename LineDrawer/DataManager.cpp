@@ -157,8 +157,13 @@ std::vector<std::filesystem::directory_entry> DataManager::getLineFiles()
 	if (!std::filesystem::exists(exportPath)) return {};
 
 	std::vector<std::filesystem::directory_entry> paths;
+	std::string path_s;
+	std::string format;
 	
 	for (auto path : std::filesystem::directory_iterator(exportPath)) {
+		path_s = path.path().string();
+		format = path_s.substr(path_s.find_last_of('.') + 1);
+		if (format != "csv") continue;
 		paths.push_back(path);
 	}
 
